@@ -1,0 +1,13 @@
+# Exp 1 - Simple Vector
+
+import tensorflow as tf
+
+# Define constants
+a = tf.constant([1.0, 2.0], dtype=tf.float32)
+b = tf.constant([2.0, 3.0], dtype=tf.float32)
+
+# Perform addition
+result = tf.add(a, b)
+
+# Print the result
+print(result.numpy())
