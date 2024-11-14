@@ -1,0 +1,39 @@
+# Exp 6  - Fine Tuning
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPooling2D
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.utils import to_categorical
+
+# Load and preprocess data
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train[..., None] / 255.0, x_test[..., None] / 255.0
+y_train, y_test = to_categorical(y_train), to_categorical(y_test)
+
+# Model definition and training function
+def build_and_train_model(lr, batch_size, epochs):
+    model = Sequential([
+        Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+        MaxPooling2D((2, 2)),
+        Flatten(),
+        Dense(128, activation='relu'),
+        Dense(10, activation='softmax')
+    ])
+    model.compile(optimizer=Adam(learning_rate=lr), loss='categorical_crossentropy', metrics=['accuracy'])
+    early_stopping = EarlyStopping(monitor='val_accuracy', patience=2, restore_best_weights=True)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, callbacks=[early_stopping])
+    return model.evaluate(x_test, y_test, verbose=0)[1]
+
+# Fine-tuning
+best_acc, best_params = 0, {}
+for lr in [0.001, 0.0005]:
+    for batch_size in [64, 128]:
+        acc = build_and_train_model(lr, batch_size, epochs=2)
+        if acc > best_acc:
+            best_acc, best_params = acc, {'learning_rate': lr, 'batch_size': batch_size}
+
+print(f"\nBest Accuracy: {best_acc} with {best_params}")
+

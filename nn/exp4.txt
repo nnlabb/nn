@@ -1,0 +1,16 @@
+#  Exp 4 - Feed Forward
+ 
+from tensorflow import keras   
+input_size = 100
+model = keras.Sequential([
+    keras.layers.Input(shape=(input_size,)),
+    keras.layers.Dense(32, activation='sigmoid'),
+    keras.layers.Dense(32, activation='sigmoid')
+ ])
+model.compile(optimizer='adam',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+model.summary()
+ 
+ 
+ 
